@@ -1,5 +1,6 @@
 import wave
-
+import zlib
+from crypto_functions import OFB_decrypt, OFB_encrypt
 # string -> unicode -> binary -> strip -> justify -> join each bit with a string and apply int to int -> list of every bit
 def transform_string_to_bits(string):
     bits = []
@@ -11,10 +12,8 @@ def transform_string_to_bits(string):
     return bits
 
 
-def get_decrypted_frames(extracted):
+def get_frames(extracted):
     delimiter_char = '#'
-    #string = "".join(chr(int("".join(map(str,extracted[i:i+8])) ,2)) for i in range(0,len(extracted),8))
-
     delimiter_array = transform_string_to_bits(delimiter_char)
     delimiter_array = "".join(map(str, delimiter_array[0:len(delimiter_array)]))
     decoded_string = ""
@@ -28,7 +27,7 @@ def get_decrypted_frames(extracted):
 
 
     
-def LSB_encrypt(string):
+def LSB_encode(string):
 
     audio_file = wave.open("audio_file.wav", mode='rb')
     frame_bytes = bytearray(list(audio_file.readframes(audio_file.getnframes())))
@@ -48,19 +47,39 @@ def LSB_encrypt(string):
         fd.writeframes(frame_modified)
     audio_file.close()
 
-def LSB_decrypt():
+def LSB_decode():
     audio_file = wave.open("audio_file_embedded.wav", mode='rb')
     frame_bytes = bytearray(list(audio_file.readframes(audio_file.getnframes())))
 
     extracted = [frame_bytes[i] & 1 for i in range(len(frame_bytes))]
-    decoded = get_decrypted_frames(extracted)
-    print("Sucessfully decoded: "+decoded)
+    decoded = get_frames(extracted)
+    #print("Sucessfully decoded: "+decoded)
     audio_file.close()
+    return decoded
 
 
 if __name__ == "__main__":
-    string='Super secret message that has to be encrypted'
-    f = open("1_second_example.txt")
-    string = f.read()
-    LSB_encrypt(string)
-    #LSB_decrypt()
+
+    reader = open("book.txt", "r", encoding="utf-8")
+    plaintext = reader.read()
+    writer = open("decrypted.txt", "w", encoding="utf-8")
+    #plaintext = "Super secret message, very long, very big, very secret, very message"
+    key = "abcdefghabcdefgh"
+    compressed_text = zlib.compress(bytes(plaintext, 'utf-8'))
+    ciphertext = OFB_encrypt(compressed_text, key)
+    LSB_encode(ciphertext[1])
+
+    decoded = LSB_decode()
+    text = OFB_decrypt((ciphertext[0], decoded), "abcdefghabcdefgh")
+
+    
+    print("Length of plaintext:", len(plaintext))
+    print("Length of plaintext after compression: ", str(len(text)))
+
+    decompressed_value = zlib.decompress(text)
+
+    writer.write(str(decompressed_value, 'utf-8'))
+
+    reader.close()
+    writer.close()
+    #print(str(decompressed_value, 'utf-8'))
