@@ -2,6 +2,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad,unpad
 from Crypto.Random import get_random_bytes
 from base64 import b64encode, b64decode
+
 def OFB_encrypt(plaintext, key):
     
     if isinstance(plaintext,str):
@@ -13,10 +14,10 @@ def OFB_encrypt(plaintext, key):
     ct_bytes = cipher.encrypt(plaintext)
 
     iv = b64encode(cipher.iv).decode('utf-8')
+    print(cipher.iv)
+    print(len(cipher.iv))
     ct = b64encode(ct_bytes).decode('utf-8')
     
-
-
     result = (iv, ct)
     #print("Resulted IV and ciphertext:", result)
     return result
