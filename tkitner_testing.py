@@ -148,8 +148,6 @@ encoded_button = ttk.Button(decode_box, text = 'Select encoded file', command = 
 # decode_button.grid(row = 7, column = 15, sticky = "nesw")
 
 encode_box.pack(ipadx=10, ipady=10, expand=False, fill='both', side = 'left')
-
-
 decode_box.pack(ipadx=10, ipady=10, expand=False, fill='both', side = 'right')
 
 

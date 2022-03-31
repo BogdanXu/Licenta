@@ -1,0 +1,99 @@
+{
+  "main": {
+    "id": "b055ef3933a323cb",
+    "type": "split",
+    "children": [
+      {
+        "id": "3eb477361df38c71",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "Identity Based Encryption.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "dff067b5667efbe9",
+    "type": "split",
+    "children": [
+      {
+        "id": "2c494f043433b369",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1b98b712db1fd5ca",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "30bb3ba5b9c011f2",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "b97dd54471efd54d",
+    "type": "split",
+    "children": [
+      {
+        "id": "faf097161c351078",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "34e748ef48d2b151",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Identity Based Encryption.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "3eb477361df38c71",
+  "lastOpenFiles": [
+    "Identity Based Encryption.md",
+    "Useful Links.md",
+    "Diffie Hellman Key Exchange.md",
+    "Phase Coding.md",
+    "LSB.md",
+    "Echo Hiding.md"
+  ]
+}
