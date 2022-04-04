@@ -3,7 +3,7 @@ import scipy.fftpack as fftpk
 from matplotlib import pyplot as plt
 from licenta import transform_string_to_bits
 import numpy as np
-from teste import amplitude_decode, amplitude_encoding
+from teste import amplitude_decoding, amplitude_encoding
 decoded_bits_fft = []
 decoded_string_fft = ""
 decoded_string_ifft = ""
@@ -16,7 +16,7 @@ def decode_string(fft):
     decoded_bit = 0
     decoded_string = ""
     for i, amplitude in enumerate(fft):
-        decoded_bit = amplitude_decode(amplitude[0].real)
+        decoded_bit = amplitude_decoding(amplitude[0].real)
         #print("Decoded bit ", decoded_bit, "from ", freqs[i], "with amplitude", amplitude[0].real)
         decoded_bits_fft.append(decoded_bit)
 
