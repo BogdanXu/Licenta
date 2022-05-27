@@ -3,7 +3,7 @@ from scipy.fft import fft, ifft
 from matplotlib import pyplot as plt
 from licenta import transform_string_to_bits
 import numpy as np
-import teste
+import amplitude_operations
 import scipy.fftpack as fftpk
 
 s_rate, signal = wavfile.read("Resources/fft_stego.wav")
@@ -20,7 +20,7 @@ for i in range(0, len(signal), 8):
 
 #Recover the secret message
 for i in range(0, len(signal)):
-    decoded_bit = teste.amplitude_decoding(recovered_y[i][0])
+    decoded_bit = amplitude_operations.amplitude_decoding(recovered_y[i][0])
     decoded_bits.append(decoded_bit)
 
 for j in range(0,len(decoded_bits),8):

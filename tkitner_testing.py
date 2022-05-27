@@ -1,8 +1,11 @@
+import base64
 import tkinter as tk
 from tkinter import StringVar, ttk
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
-from licenta import LSB_encode, LSB_decode
+from fft_decoder import fft_decoder
+from fft_encoder import fft_encoder
+from licenta import LSB_encode, LSB_decode, get_folder_from_path
 from crypto_functions import OFB_decrypt, OFB_encrypt
 import zlib
 
@@ -43,6 +46,8 @@ key_tb = tk.Text(root, height = 1, width = 20)
 key_tb.insert(1.0, "sixteenbyteskeyy")
 offset_tb = tk.Text(root, height = 1, width = 20)
 offset_tb.insert(1.0, "2")
+
+
 
 
 
@@ -94,44 +99,79 @@ def get_offset():
     offset = offset_tb.get("1.0", "end-1c")
     return int(offset)
 
+
 def encode():
     #add these variables to the GUI later
-    embedded_audio_path = "Resources/audio_file_embedded.wav"
+
     offset = get_offset()
 
     #getting audio + plaintext files paths
     carrier_path = str(carrier_tb.cget("text"))
     plaintext_path = str(plaintext_tb.cget("text"))
+    embedded_audio_path = get_folder_from_path(carrier_path) + "/embedded_audio.wav"
 
-    reader = open(plaintext_path, "r", encoding="utf-8")
-    plaintext = reader.read()
-    compressed_text = zlib.compress(bytes(plaintext, 'utf-8'))
+    #b64encode read
+    with open(plaintext_path, "rb") as stego_file:
+        b64string = base64.b64encode(stego_file.read())
+
+    #.txt only
+    # reader = open(plaintext_path, "r", encoding="utf-8")
+    # plaintext = reader.read()
+
+    #compression
+    #compressed_text = zlib.compress(bytes(b64string, 'utf-8'))
+    compressed_text = b64string
+    #encryption
     key = get_key()
     print("Key used is: %s" % key)
     ofb_result = OFB_encrypt(compressed_text, key)
+
+    #encoding
     LSB_encode(ofb_result[0], ofb_result[1], carrier_path, embedded_audio_path, offset, iv_delimiter, ct_delimiter)
-    reader.close()
+    stego_file.close()
 
 def decode():
     #add these variables to the GUI later
-    recoveredtext_path = "Resources/decrypted.txt"
+
     embedded_audio_path = str(embedded_tb.cget("text"))
+    recoveredtext_path = get_folder_from_path(embedded_audio_path) + "/recovered.txt"
+
     offset = get_offset()
+    #decoding
     decoded = LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter)
+
+    #decryption
     key = get_key()
     print("Key used is: %s" % key)
     text = OFB_decrypt(decoded, key)
-    decompressed_text = zlib.decompress(text)
 
-    writer = open(recoveredtext_path, "w", encoding="utf-8")
-    writer.write(str(decompressed_text, 'utf-8'))
+    #decompression
+    #decompressed_text = zlib.decompress(text)
+    decompressed_text = text
+
+    #b64decode
+    writer = open(recoveredtext_path, "wb")
+    writer.write(base64.b64decode(decompressed_text))
     writer.close()
+
+def fft_encode():
+    carrier_path = str(carrier_tb.cget("text"))
+    plaintext_path = str(plaintext_tb.cget("text"))
+    reader = open(plaintext_path, "r", encoding="utf-8")
+    stego_message = reader.read()
+    fft_encoder(carrier_path, stego_message)
+
+def fft_decode():
+    embedded_audio_path = str(embedded_tb.cget("text"))
+    fft_decoder(embedded_audio_path)
 
 # open button
 open_button = ttk.Button(encode_box, text='Select carrier file', command = select_carrier)
 open_button2 = ttk.Button(encode_box, text = 'Select plaintext', command = select_plaintext)
-encode_button = ttk.Button(root, text = 'Start encoding', command = encode)
-decode_button = ttk.Button(root, text = 'Start decoding', command = decode)
+encode_button = ttk.Button(root, text = 'Start LSB encoding', command = encode)
+encode_button2 = ttk.Button(root, text = 'Start FFT encoding', command = fft_encode)
+decode_button = ttk.Button(root, text = 'Start LSB decoding', command = decode)
+decode_button2 = ttk.Button(root, text = 'Start FFT decoding', command = fft_decode)
 encoded_button = ttk.Button(decode_box, text = 'Select encoded file', command = select_encoded_file)
 
 
@@ -163,8 +203,10 @@ key_label.pack(pady=5)
 key_tb.pack(pady=2)
 offset_label.pack(pady=5)
 offset_tb.pack(pady=2)
-encode_button.pack(padx=5,pady=10)
-decode_button.pack(pady=0)
+encode_button.pack(pady=2)
+encode_button2.pack(pady=2)
+decode_button.pack(pady=2)
+decode_button2.pack(pady=2)
 
 
 
