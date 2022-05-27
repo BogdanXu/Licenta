@@ -53,7 +53,7 @@ def fft_encoder(carrier_path, stego_message):
 # fft2 = fftpk.fft(signal)
 # freqs = fftpk.fftfreq(len(fft2), (1.0/s_rate))
 
-# plt.plot(freqs[range(len(fft2)//2)], fft2[range(len(fft2)//2)])                                                          
+# plt.plot(freqs[range(len(fft2)//2)], fft2[range(len(fft2)//2)])
 # plt.xlabel('Frequency (Hz)')
 # plt.ylabel('Amplitude')
 # plt.show()

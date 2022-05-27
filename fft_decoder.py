@@ -46,7 +46,7 @@ def fft_decoder(carrier_path):
 
 
     #freqs2 = fftpk.fftfreq(len(fft2), (1.0/s_rate2))
-    # plt.plot(freqs2[range(len(fft2)//2)], fft2[range(len(fft2)//2)])                                                          
+    # plt.plot(freqs2[range(len(fft2)//2)], fft2[range(len(fft2)//2)])
     # plt.xlabel('Frequency (Hz)')
     # plt.ylabel('Amplitude')
     # plt.show()
