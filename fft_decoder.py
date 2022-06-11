@@ -39,11 +39,13 @@ def fft_decoder(carrier_path):
     length2 = signal2.shape[0] / s_rate2
     #print(f"Stego file length = {length2}s")
 
-    fft2 = fftpk.fft(signal2)
-    decoded_string_stego = decode_string(fft2, 50)
+    fft2 = fftpk.rfft(signal2)
+    decoded_string_stego = decode_string(fft2, 774836)
     recoveredtext_path = get_folder_from_path(carrier_path) + "/recovered.txt"
-    print("Decoded string after fft on stego file:", decoded_string_stego[0:50])
+    # print("Decoded string after fft on stego file:", decoded_string_stego[0:774836])
 
+    with open(recoveredtext_path, 'w') as f:
+        f.write(decoded_string_stego[0:1000])
 
     #freqs2 = fftpk.fftfreq(len(fft2), (1.0/s_rate2))
     # plt.plot(freqs2[range(len(fft2)//2)], fft2[range(len(fft2)//2)])

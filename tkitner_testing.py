@@ -28,7 +28,7 @@ while rows < 50:
     root.columnconfigure(rows,weight=1)
     rows += 1
 
-
+ 
 #variables + textboxes
 encode_box = tk.Label(root)
 decode_box = tk.Label(root)

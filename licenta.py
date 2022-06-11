@@ -15,8 +15,6 @@ def get_folder_from_path(path):
     slash_index = path.rfind('/')
     return path[0:slash_index]
 
-print(get_folder_from_path("C:/Users/Xu/Resources/mata.wav"))
-
 # string -> unicode -> binary -> strip -> justify -> join each bit with a string and cast to int -> put each bit in a list
 def transform_string_to_bits(string):
     bits = []

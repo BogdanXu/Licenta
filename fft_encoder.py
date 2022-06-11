@@ -1,6 +1,6 @@
 import scipy.io.wavfile as wavfile
 import numpy as np
-from scipy.fft import fft, ifft
+from scipy.fft import fft, ifft, irfft
 import amplitude_operations
 from licenta import get_folder_from_path, transform_string_to_bits
 import scipy.fftpack as fftpk
@@ -18,15 +18,16 @@ def fft_encoder(carrier_path, stego_message):
     bits = transform_string_to_bits(stego_message)
     decoded_bits = []
     decoded_string = ""
-
     #Starting encoding
-    #Splitting the signal into bytes in order to apply FFT on each byte
-    for i in range(0, len(signal), 8):
-        y.extend(fft(signal[i:i+8])) 
+    #Splitting the signal into bytes in order to apply FFT on each byte # splitting is useless, just fft the whole thing
+    # for i in range(0, len(signal), 8):
+    #     y.extend(fft(signal[i:i+8])) 
+    y = fftpk.rfft(signal)
 
     #Appending the bits of the message to the FFT signal
     for i in range(0, len(bits)):
         y[i][0] = amplitude_operations.amplitude_encoding(y[i][0], bits[i])
+    #print("Embedded " + str(bits) " bits into a carrier that has a size of " + str(len(signal)))
 
     #Checking the encoded message
     # for i in range(0, len(signal)):
@@ -37,9 +38,8 @@ def fft_encoder(carrier_path, stego_message):
     #     decoded_string += chr(int(decoded_char, 2))
     # print(decoded_string[0:50])
 
-    #Doing the Inverse FFT on each byte
-    for i in range(0, len(y), 8):
-        y_inv.extend(ifft(y[i:i+8]))
+    #Doing the Inverse FFT
+    y_inv.extend(irfft(y))
 
     #Write the embedded data to the output .wav file
     embedded_audio_path = get_folder_from_path(carrier_path) + "/embedded_audio.wav"
