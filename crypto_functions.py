@@ -28,6 +28,7 @@ def OFB_decrypt(result, key):
         key = bytes(key, 'utf-8')
     iv = b64decode(result[0])
     ct = b64decode(result[1])
+    print(iv, " ", ct)
     cipher = AES.new(key, AES.MODE_OFB, iv = iv)
     pt = cipher.decrypt(ct)
     #print("Decrypted:", pt)

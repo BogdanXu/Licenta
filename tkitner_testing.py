@@ -12,14 +12,15 @@ import zlib
 global carrier_text, plaintext_text 
 
 #add these later to GUI settings
-iv_delimiter = "8058060923" 
-ct_delimiter = "6320986309" 
+
+iv_delimiter = "GE4" 
+ct_delimiter = "0X3" 
 
 # create the root window
 root = tk.Tk()
 root.title('Steganography App')
 root.resizable(True, True)
-root.geometry('720x250')
+root.geometry('720x300')
 root.configure(background="lightgrey")
 
 rows = 0
@@ -30,22 +31,35 @@ while rows < 50:
 
  
 #variables + textboxes
-encode_box = tk.Label(root)
-decode_box = tk.Label(root)
-encoding_label = tk.Label(encode_box, text = "Encoding a file with a secret message")
-decoding_label = tk.Label(decode_box, text = "Decoding a secret message from a file")
-key_label = tk.Label(root, text = "Write the 16 bytes key used for encoding/decoding", wraplength=200)
+tab_control = ttk.Notebook(root)
+
+tab1 = ttk.Frame(tab_control)
+tab2 = ttk.Frame(tab_control)
+tab_control.add(tab1, text ='Steganography operations')
+tab_control.add(tab2, text ='Settings')
+tab_control.pack(expand = 1, fill ="both")
+encode_box = ttk.Label(tab1)
+decode_box = ttk.Label(tab1)
+encoding_label = ttk.Label(encode_box, text = "Encoding a file with a secret message")
+decoding_label = ttk.Label(decode_box, text = "Decoding a secret message from a file")
+key_label = ttk.Label(tab1, text = "16 bytes key used for encoding/decoding", wraplength=200)
 carrier_text = StringVar(value = "Step 1:")
 plaintext_text = StringVar(value = "Step 2: ")
 embedded_text = StringVar(value = "Step 1: ")
-carrier_tb = tk.Label(encode_box, textvariable=carrier_text, width=30, wraplength=200, height=2)
-plaintext_tb = tk.Label(encode_box, textvariable=plaintext_text, width=30, wraplength=200, height=2)
-embedded_tb = tk.Label(decode_box, textvariable=embedded_text, width=30, wraplength=200, height=2)
-offset_label = tk.Label(root, text = "Enter the offset between the encoded bits")
-key_tb = tk.Text(root, height = 1, width = 20)
+carrier_tb = ttk.Label(encode_box, textvariable=carrier_text, width=30, wraplength=200)
+plaintext_tb = ttk.Label(encode_box, textvariable=plaintext_text, width=30, wraplength=200)
+embedded_tb = ttk.Label(decode_box, textvariable=embedded_text, width=30, wraplength=200)
+offset_label = ttk.Label(tab1, text = "Offset between the encoded bits")
+iv_del_label = ttk.Label(tab2, text = "First delimiter used to separate data")
+ct_del_label = ttk.Label(tab2, text = "Second delimiter used to separate data")
+key_tb = tk.Text(tab1, height = 1, width = 20)
+iv_delimiter_tb = tk.Text(tab2, height = 1, width = 20)
+ct_delimiter_tb = tk.Text(tab2, height = 1, width = 20)
 key_tb.insert(1.0, "sixteenbyteskeyy")
-offset_tb = tk.Text(root, height = 1, width = 20)
+offset_tb = tk.Text(tab1, height = 1, width = 20)
 offset_tb.insert(1.0, "2")
+iv_delimiter_tb.insert(1.0, iv_delimiter)
+ct_delimiter_tb.insert(1.0, ct_delimiter)
 
 
 
@@ -99,6 +113,15 @@ def get_offset():
     offset = offset_tb.get("1.0", "end-1c")
     return int(offset)
 
+def get_iv_del():
+    iv_del = iv_delimiter_tb.get("1.0", "end-1c")
+    return iv_del
+
+def get_ct_del():
+    ct_del = ct_delimiter_tb.get("1.0", "end-1c")
+    return ct_del
+
+
 
 def encode():
     #add these variables to the GUI later
@@ -126,17 +149,22 @@ def encode():
     print("Key used is: %s" % key)
     ofb_result = OFB_encrypt(compressed_text, key)
 
+    iv_delimiter = get_iv_del()
+    ct_delimiter = get_ct_del()
+
     #encoding
     LSB_encode(ofb_result[0], ofb_result[1], carrier_path, embedded_audio_path, offset, iv_delimiter, ct_delimiter)
     stego_file.close()
 
 def decode():
-    #add these variables to the GUI later
 
     embedded_audio_path = str(embedded_tb.cget("text"))
     recoveredtext_path = get_folder_from_path(embedded_audio_path) + "/recovered.txt"
 
     offset = get_offset()
+    iv_delimiter = get_iv_del()
+    ct_delimiter = get_ct_del()
+
     #decoding
     decoded = LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter)
 
@@ -168,10 +196,10 @@ def fft_decode():
 # open button
 open_button = ttk.Button(encode_box, text='Select carrier file', command = select_carrier)
 open_button2 = ttk.Button(encode_box, text = 'Select plaintext', command = select_plaintext)
-encode_button = ttk.Button(root, text = 'Start LSB encoding', command = encode)
-encode_button2 = ttk.Button(root, text = 'Start FFT encoding', command = fft_encode)
-decode_button = ttk.Button(root, text = 'Start LSB decoding', command = decode)
-decode_button2 = ttk.Button(root, text = 'Start FFT decoding', command = fft_decode)
+encode_button = ttk.Button(tab1, text = 'Start LSB encoding', command = encode)
+encode_button2 = ttk.Button(tab1, text = 'Start FFT encoding', command = fft_encode)
+decode_button = ttk.Button(tab1, text = 'Start LSB decoding', command = decode)
+decode_button2 = ttk.Button(tab1, text = 'Start FFT decoding', command = fft_decode)
 encoded_button = ttk.Button(decode_box, text = 'Select encoded file', command = select_encoded_file)
 
 
@@ -202,6 +230,12 @@ encoded_button.pack()
 key_label.pack(pady=5)
 key_tb.pack(pady=2)
 offset_label.pack(pady=5)
+offset_tb.pack(pady=2)
+iv_del_label.pack(pady=2)
+iv_delimiter_tb.pack(pady=2)
+ct_del_label.pack(pady=2)
+ct_delimiter_tb.pack(pady=2)
+
 offset_tb.pack(pady=2)
 encode_button.pack(pady=2)
 encode_button2.pack(pady=2)

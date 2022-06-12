@@ -1,3 +1,4 @@
+import string
 import wave
 import zlib
 from crypto_functions import OFB_decrypt, OFB_encrypt
@@ -6,14 +7,15 @@ import base64
 from PIL import Image
 import io
 
-iv_delimiter = "8058060923" #add this later to GUI
-ct_delimiter = "6320986309" #this too
+iv_delimiter = "695" #add this later to GUI
+ct_delimiter = "X0B" #this too
 offset = 2
 
 
 def get_folder_from_path(path):
     slash_index = path.rfind('/')
     return path[0:slash_index]
+
 
 # string -> unicode -> binary -> strip -> justify -> join each bit with a string and cast to int -> put each bit in a list
 def transform_string_to_bits(string):
@@ -46,6 +48,7 @@ def get_frames(extracted, iv_delimiter, ct_delimiter):
     decoded_byte = b''
     found_iv, found_ct = False, False
 
+
     for i in range(0,len(extracted),8):
         decoded_byte = "".join(map(str,extracted[i:i+8]))
         decoded_string += chr(int(decoded_byte, 2))
@@ -58,12 +61,13 @@ def get_frames(extracted, iv_delimiter, ct_delimiter):
         found_iv = True
     
     if ct_delimiter in decoded_string:
-        index_ct_end = decoded_string.index(ct_delimiter)
+        index_ct_end = decoded_string.rindex(ct_delimiter)
         ct = decoded_string[index_ct_start:index_ct_end]
         result[1] += ct
         found_ct = True
 
     if found_iv and found_ct:
+        print(tuple(result))
         return tuple(result)
 
 
@@ -97,7 +101,7 @@ def LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter):
 
     extracted = [frame_bytes[i] & 1 for i in range(len(frame_bytes)) if i%offset==0]
     decoded = get_frames(extracted, iv_delimiter, ct_delimiter)
-    #print("Sucessfully decoded: "+decoded)
+    print("Sucessfully decoded: ", decoded)
     audio_file.close()
     print("Finished decoding")
     return decoded
