@@ -19,7 +19,6 @@ def OFB_encrypt(plaintext, key):
     ct = b64encode(ct_bytes).decode('utf-8')
     
     result = (iv, ct)
-    #print("Resulted IV and ciphertext:", result)
     return result
 
 def OFB_decrypt(result, key):

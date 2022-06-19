@@ -5,10 +5,12 @@ from crypto_functions import OFB_decrypt, OFB_encrypt
 import numpy as np
 import base64
 from PIL import Image
+import sounddevice as sd
+import scipy.io.wavfile as wavfile
 import io
 
 iv_delimiter = "695" #add this later to GUI
-ct_delimiter = "X0B" #this too
+ct_delimiter = "125" #this too
 offset = 2
 
 
@@ -76,7 +78,9 @@ def LSB_encode(iv, string, original_audio_path, embedded_audio_path, offset, iv_
 
     audio_file = wave.open(original_audio_path, mode='rb')
     frame_bytes = bytearray(list(audio_file.readframes(audio_file.getnframes())))
+    
     print("Number of frame_bytes is", len(frame_bytes))
+    
     string = iv + iv_delimiter + string + ct_delimiter
 
     bits = transform_string_to_bits(string)                                                       
@@ -92,7 +96,6 @@ def LSB_encode(iv, string, original_audio_path, embedded_audio_path, offset, iv_
         fd.writeframes(frame_modified)
     audio_file.close()
     print("Finished encoding")
-
 
 #Decodes the IV and the ciphertext in the audio file
 def LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter):

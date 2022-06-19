@@ -10,35 +10,20 @@ def fft_encoder(carrier_path, stego_message):
 
     #Reading the complex values of the signal
     s_rate, signal = wavfile.read(carrier_path)
-    ch_count = signal.shape[1]
-    length = signal.shape[0] / s_rate
     y = []
     y_inv = []
-    recovered_y = []
+    stego_message = stego_message + '¬'
     bits = transform_string_to_bits(stego_message)
-    decoded_bits = []
-    decoded_string = ""
-    #Starting encoding
-    #Splitting the signal into bytes in order to apply FFT on each byte # splitting is useless, just fft the whole thing
-    # for i in range(0, len(signal), 8):
-    #     y.extend(fft(signal[i:i+8])) 
+    
     y = fftpk.rfft(signal)
+    y2 = fftpk.rfft(signal)
 
     #Appending the bits of the message to the FFT signal
     for i in range(0, len(bits)):
-        y[i][0] = amplitude_operations.amplitude_encoding(y[i][0], bits[i])
-    #print("Embedded " + str(bits) " bits into a carrier that has a size of " + str(len(signal)))
+        embedded_bit = bits[i]
+        y[i][0] = amplitude_operations.amplitude_encoding(y[i][0], embedded_bit)
+        y[i][1] = amplitude_operations.amplitude_encoding(y[i][1], embedded_bit)
 
-    #Checking the encoded message
-    # for i in range(0, len(signal)):
-    #     decoded_bit = teste.amplitude_decoding(y[i][0])
-    #     decoded_bits.append(decoded_bit)
-    # for j in range(0,len(decoded_bits),8):
-    #     decoded_char = "".join(map(str,decoded_bits[j:j+8]))
-    #     decoded_string += chr(int(decoded_char, 2))
-    # print(decoded_string[0:50])
-
-    #Doing the Inverse FFT
     y_inv.extend(irfft(y))
 
     #Write the embedded data to the output .wav file

@@ -8,6 +8,7 @@ from fft_encoder import fft_encoder
 from licenta import LSB_encode, LSB_decode, get_folder_from_path
 from crypto_functions import OFB_decrypt, OFB_encrypt
 import zlib
+import threading
 
 global carrier_text, plaintext_text 
 
@@ -29,7 +30,6 @@ while rows < 50:
     root.columnconfigure(rows,weight=1)
     rows += 1
 
- 
 #variables + textboxes
 tab_control = ttk.Notebook(root)
 
@@ -60,9 +60,6 @@ offset_tb = tk.Text(tab1, height = 1, width = 20)
 offset_tb.insert(1.0, "2")
 iv_delimiter_tb.insert(1.0, iv_delimiter)
 ct_delimiter_tb.insert(1.0, ct_delimiter)
-
-
-
 
 
 
@@ -105,27 +102,28 @@ def select_encoded_file():
         filetypes=filetypes)
     embedded_text.set(filename)
 
+
 def get_key():
     key = key_tb.get("1.0", "end-1c")
     return key
+
 
 def get_offset():
     offset = offset_tb.get("1.0", "end-1c")
     return int(offset)
 
+
 def get_iv_del():
     iv_del = iv_delimiter_tb.get("1.0", "end-1c")
     return iv_del
+
 
 def get_ct_del():
     ct_del = ct_delimiter_tb.get("1.0", "end-1c")
     return ct_del
 
 
-
 def encode():
-    #add these variables to the GUI later
-
     offset = get_offset()
 
     #getting audio + plaintext files paths
@@ -136,14 +134,8 @@ def encode():
     #b64encode read
     with open(plaintext_path, "rb") as stego_file:
         b64string = base64.b64encode(stego_file.read())
-
-    #.txt only
-    # reader = open(plaintext_path, "r", encoding="utf-8")
-    # plaintext = reader.read()
-
-    #compression
-    #compressed_text = zlib.compress(bytes(b64string, 'utf-8'))
     compressed_text = b64string
+
     #encryption
     key = get_key()
     print("Key used is: %s" % key)
@@ -156,8 +148,21 @@ def encode():
     LSB_encode(ofb_result[0], ofb_result[1], carrier_path, embedded_audio_path, offset, iv_delimiter, ct_delimiter)
     stego_file.close()
 
-def decode():
 
+def start_fft_encoding_in_bg():
+    threading.Thread(target=fft_encode).start()
+
+def start_fft_decoding_in_bg():
+    threading.Thread(target=fft_decode).start()
+
+def start_lsb_encoding_in_bg():
+    threading.Thread(target=encode).start()
+
+def start_lsb_decoding_in_bg():
+    threading.Thread(target=decode).start()
+
+
+def decode():
     embedded_audio_path = str(embedded_tb.cget("text"))
     recoveredtext_path = get_folder_from_path(embedded_audio_path) + "/recovered.txt"
 
@@ -182,6 +187,7 @@ def decode():
     writer.write(base64.b64decode(decompressed_text))
     writer.close()
 
+
 def fft_encode():
     carrier_path = str(carrier_tb.cget("text"))
     plaintext_path = str(plaintext_tb.cget("text"))
@@ -189,15 +195,17 @@ def fft_encode():
     stego_message = reader.read()
     fft_encoder(carrier_path, stego_message)
 
+
 def fft_decode():
     embedded_audio_path = str(embedded_tb.cget("text"))
     fft_decoder(embedded_audio_path)
+
 
 # open button
 open_button = ttk.Button(encode_box, text='Select carrier file', command = select_carrier)
 open_button2 = ttk.Button(encode_box, text = 'Select plaintext', command = select_plaintext)
 encode_button = ttk.Button(tab1, text = 'Start LSB encoding', command = encode)
-encode_button2 = ttk.Button(tab1, text = 'Start FFT encoding', command = fft_encode)
+encode_button2 = ttk.Button(tab1, text = 'Start FFT encoding', command = start_fft_encoding_in_bg)
 decode_button = ttk.Button(tab1, text = 'Start LSB decoding', command = decode)
 decode_button2 = ttk.Button(tab1, text = 'Start FFT decoding', command = fft_decode)
 encoded_button = ttk.Button(decode_box, text = 'Select encoded file', command = select_encoded_file)

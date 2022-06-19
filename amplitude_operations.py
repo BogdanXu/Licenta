@@ -9,16 +9,16 @@ def bin_to_float(binary):
 #The 10th bit from the end of the binary representation seems to work the best for now, encoding there
 def amplitude_encoding(amplitude, bit):
     encoded_amplitude = float_to_bin(amplitude)
-    encoded_amplitude = encoded_amplitude[:-10] + str(bit) + encoded_amplitude[-9:]
+    encoded_amplitude = encoded_amplitude[:-21] + str(bit)*8 + encoded_amplitude[-13:]
     encoded_amplitude = bin_to_float(encoded_amplitude)
     return encoded_amplitude
 
 def amplitude_decoding(amplitude):
     decoded_amplitude = float_to_bin(amplitude)
-    decoded_bit = decoded_amplitude[-10]
+    decoded_bit = decoded_amplitude[-15]
     return int(decoded_bit)
 
-amplitude = -1.99999999999999
+amplitude = -0.000000000000001
 encoded_amplitude = amplitude_encoding(amplitude, 1)
 print(encoded_amplitude)
 bit = amplitude_decoding(encoded_amplitude)

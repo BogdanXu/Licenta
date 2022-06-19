@@ -3,9 +3,15 @@ import numpy as np
 import scipy.io.wavfile as wavfile
 import scipy.fftpack as fftpk
 
-s_rate, signal = wavfile.read("Resources/embedded_audio.wav")
-ch_count = signal.shape[1]
-length = len(signal)/s_rate
+def wav_reader(filename):   
+    s_rate, signal = wavfile.read(filename)
+    ch_count = signal.shape[1]
+    length = len(signal)/s_rate
+
+    return s_rate, signal, ch_count, length
+
+s_rate, signal, ch_count, length = wav_reader("Resources/audio_file_6.wav")
+frame_bytes = bytearray(signal)
 #Get time from indices
 print("wav file has " + str(len(signal)) + " elements in each of its " + str(ch_count) + " channels")
 
