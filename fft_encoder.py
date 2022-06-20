@@ -1,13 +1,14 @@
 import scipy.io.wavfile as wavfile
 import numpy as np
-from scipy.fft import fft, ifft, irfft
+#from scipy.fft import fft, ifft, irfft
 import amplitude_operations
 from licenta import get_folder_from_path, transform_string_to_bits
-import scipy.fftpack as fftpk
+#import scipy.fftpack as fftpk
 from matplotlib import pyplot as plt
-
+from numpy.fft import fft, ifft, irfft
+import numpy.fft as fftpk
 def fft_encoder(carrier_path, stego_message):
-
+    epsilon = np.finfo(np.float32).eps
     #Reading the complex values of the signal
     s_rate, signal = wavfile.read(carrier_path)
     y = []
@@ -19,12 +20,22 @@ def fft_encoder(carrier_path, stego_message):
     y2 = fftpk.rfft(signal)
 
     #Appending the bits of the message to the FFT signal
-    for i in range(0, len(bits)):
-        embedded_bit = bits[i]
-        y[i][0] = amplitude_operations.amplitude_encoding(y[i][0], embedded_bit)
-        y[i][1] = amplitude_operations.amplitude_encoding(y[i][1], embedded_bit)
+    bit_index = 0
+    bit_array_size = len(bits)
+    for i in range(0, len(y)):
+        if bit_index == bit_array_size:
+            break
+        embedded_bit = bits[bit_index]
+        if y[i][0] > epsilon:
+            y[i][0] = amplitude_operations.amplitude_encoding(y[i][0], embedded_bit)
+            bit_index += 1
+        # y[i][1] = amplitude_operations.amplitude_encoding(y[i][1], embedded_bit)
+
+
 
     y_inv.extend(irfft(y))
+
+    fft2 = fftpk.rfft(y_inv)
 
     #Write the embedded data to the output .wav file
     embedded_audio_path = get_folder_from_path(carrier_path) + "/embedded_audio.wav"
