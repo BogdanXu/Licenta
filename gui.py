@@ -5,9 +5,9 @@ from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo, showerror
 from fft_decoder import fft_decoder
 from fft_encoder import fft_encoder
-from licenta import LSB_encode, LSB_decode, get_folder_from_path
+from lsb_functions import LSB_encode, LSB_decode, get_folder_from_path
 from crypto_functions import OFB_decrypt, OFB_encrypt
-import zlib
+
 import threading
 import converter
 
@@ -142,14 +142,14 @@ def encode():
 
     if carrier_path == "Step 1: " or plaintext_path == "Step 2: ":
         showerror("No file selected","Please select both a 16-bit encoded .wav file and a file to be encoded" )
-    elif len(offset) == 0:
-        showerror("Invalid offset","Please enter a valid positive integer offset" )
+    elif offset == 0:
+        showerror("Invalid offset","Offset must be at least 1" )
     else:
         embedded_audio_path = get_folder_from_path(carrier_path) + "/embedded_audio.wav"
 
         #b64encode read
         with open(plaintext_path, "rb") as stego_file:
-            b64string = base64.b64encode(stego_file.read())
+            b64string = stego_file.read()
         compressed_text = b64string
 
         #encryption
@@ -219,7 +219,7 @@ def decode():
 
     #b64decode
     writer = open(recoveredtext_path, "wb")
-    writer.write(base64.b64decode(decompressed_text))
+    writer.write(decompressed_text)
     writer.close()
     pb.stop()
     pb.pack_forget()
@@ -252,7 +252,9 @@ def fft_decode():
     pb.pack_forget()
     
 def subtype_convert():
-    converter.convert_wav_to_subtype()
+    carrier_path = str(carrier_tb.cget("text"))
+    subtype = dropdown_clicked.get()
+    converter.convert_wav_to_subtype(carrier_path, subtype)
     
 
 # open button

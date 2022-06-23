@@ -1,13 +1,5 @@
-import string
 import wave
-import zlib
-from crypto_functions import OFB_decrypt, OFB_encrypt
 import numpy as np
-import base64
-from PIL import Image
-import sounddevice as sd
-import scipy.io.wavfile as wavfile
-import io
 
 iv_delimiter = "695" #add this later to GUI
 ct_delimiter = "125" #this too
@@ -42,9 +34,7 @@ def encode_positions(max_length, number_of_positions, key):
 
 #Gets an array of last significant bits and decodes IV and ciphertext from it
 def get_frames(extracted, iv_delimiter, ct_delimiter):
-    # delimiter_char = '#'
-    # delimiter_array = transform_string_to_bits(delimiter_char)
-    # delimiter_array = "".join(map(str, delimiter_array[0:len(delimiter_array)]))
+
     result = ["", ""]
     decoded_string = ""
     decoded_byte = b''
@@ -108,42 +98,3 @@ def LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter):
     audio_file.close()
     print("Finished decoding")
     return decoded
-
-
-if __name__ == "__main__":
-
-    original_audio_path = "Resources/audio_file.wav"
-    embedded_audio_path = "Resources/audio_file_embedded.wav"
-    plaintext_path = "Resources/book.txt"
-    recoveredtext_path = "Resources/decrypted.txt"
-
-    #LSB Text Processing
-    reader = open(plaintext_path, "r", encoding="utf-8")
-    plaintext = reader.read()
-    writer = open(recoveredtext_path, "w", encoding="utf-8")
-    #plaintext = "Super secret message, very long, very big, very secret, very message"
-    key = "abcdefghabcdefgh"
-    compressed_text = zlib.compress(bytes(plaintext, 'utf-8'))
-    ofb_result = OFB_encrypt(compressed_text, key)
-    LSB_encode(ofb_result[0], ofb_result[1], original_audio_path, embedded_audio_path, offset, iv_delimiter, ct_delimiter)
-    decoded = LSB_decode(embedded_audio_path, offset, iv_delimiter, ct_delimiter)
-    text = OFB_decrypt(decoded, "abcdefghabcdefgh")
-    print("Length of plaintext:", len(plaintext))
-    print("Length of plaintext after compression: ", str(len(text)))
-    decompressed_text = zlib.decompress(text)
-    writer.write(str(decompressed_text, 'utf-8'))
-    reader.close()
-    writer.close()
-
-    #LSB Image Processing
-    with open("Resources/image.png", "rb") as image:
-        b64string = base64.b64encode(image.read()) 
-    decoded_image = open('Resources/image_decoded.png', 'wb')
-    ofb_result = OFB_encrypt(b64string, key)
-    LSB_encode(ofb_result[0], ofb_result[1], original_audio_path, embedded_audio_path, offset, iv_delimiter, ct_delimiter)
-    decoded = LSB_decode("Resources/audio_file_embedded.wav", offset, iv_delimiter, ct_delimiter)
-    image = OFB_decrypt(decoded, "abcdefghabcdefgh")
-
-    decoded_image.write(base64.b64decode(image))
-    decoded_image.close()
-    #print(str(decompressed_value, 'utf-8'))

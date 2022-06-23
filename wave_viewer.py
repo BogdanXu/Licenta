@@ -10,7 +10,7 @@ def wav_reader(filename):
 
     return s_rate, signal, ch_count, length
 
-s_rate, signal, ch_count, length = wav_reader("Resources/audio_file_6.wav")
+s_rate, signal, ch_count, length = wav_reader("Resources/piano.wav")
 frame_bytes = bytearray(signal)
 #Get time from indices
 print("wav file has " + str(len(signal)) + " elements in each of its " + str(ch_count) + " channels")
@@ -21,7 +21,7 @@ print("fft of wav file has " + str(len(fft2)) + " elements in each of its " + st
 
 time = np.arange(0, length, 1/s_rate)
 #Plot
-plt.title('audio file, 2 channels, 4,108,858 bytes')
+plt.title('Time domain of audio file, 2 channels, 4,108,858 bytes')
 plt.plot(time, signal)
 # plt.plot(signal[0:10240][1])
 plt.xlabel('Time [s]')
@@ -31,7 +31,7 @@ plt.ylabel('Amplitude')
 #     plt.plot(Time,channel)
 plt.show()
 
-plt.title('FFT of embedded audio file, 2 channels, 4,108,858 bytes')
+plt.title('Frequency domain of audio file, 2 channels, 4,108,858 bytes')
 plt.plot(freqs, fft2)
 # plt.plot(signal[0:10240][1])
 plt.xlabel('Frequency [Hz]')

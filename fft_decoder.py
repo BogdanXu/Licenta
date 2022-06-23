@@ -2,7 +2,7 @@ import scipy.io.wavfile as wavfile
 #import scipy.fftpack as fftpk
 from matplotlib import pyplot as plt
 from amplitude_operations import amplitude_decoding
-from licenta import get_folder_from_path
+from lsb_functions import get_folder_from_path
 import numpy.fft as fftpk
 import numpy as np
 

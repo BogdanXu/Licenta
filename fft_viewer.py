@@ -1,6 +1,6 @@
 import scipy.io.wavfile as wavfile
 from matplotlib import pyplot as plt
-from licenta import transform_string_to_bits
+from lsb_functions import transform_string_to_bits
 import numpy as np
 import amplitude_operations
 import scipy.fftpack as fftpk
@@ -15,7 +15,7 @@ def generate_sine_wave(freq, sample_rate, duration):
 SAMPLE_RATE = 44100  # Hertz
 DURATION = 5  # Seconds
 
-s_rate, signal = wavfile.read("Resources/fft_stego.wav")
+s_rate, signal = wavfile.read("Resources/piano.wav")
 ch_count = signal.shape[1]
 length = signal.shape[0] / s_rate
 recovered_y = []
@@ -41,13 +41,8 @@ plt.xlabel('Time')
 plt.ylabel('Amplitude')
 plt.show()
 
-#FFT on stegofile #useless, just do line 48
-# for i in range(0, len(signal), 8):
-#     recovered_y.extend(fftpk.rfft(signal[i:i+8]))
-
-
-fft2 = fftpk.rfft(signal)
-freqs = fftpk.rfftfreq(len(fft2), (1.0/s_rate))
+fft2 = fftpk.fft(signal)
+freqs = fftpk.fftfreq(len(fft2), (1.0/s_rate))
 
 plt.plot(freqs[range(len(fft2)//2)], fft2[range(len(fft2)//2)])                                                          
 plt.xlabel('Frequency (Hz)')
@@ -56,8 +51,8 @@ plt.show()
 
 N = SAMPLE_RATE * DURATION
 
-yf = fftpk.rfft(normalized_tone)
-xf = fftpk.rfftfreq(N, 1 / SAMPLE_RATE)
+yf = fftpk.fft(normalized_tone)
+xf = fftpk.fftfreq(N, 1 / SAMPLE_RATE)
 
 plt.plot(xf, np.abs(yf))
 plt.xlabel('Frequency (Hz)')

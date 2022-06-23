@@ -23,20 +23,3 @@ encoded_amplitude = amplitude_encoding(amplitude, 1)
 print(encoded_amplitude)
 bit = amplitude_decoding(encoded_amplitude)
 print(bit)
-#print(amplitude_decoding(-2))
-
-
-# import base64
-
-# with open("image.png", "rb") as image:
-#     b64string = base64.b64encode(image.read())
-
-# print(b64string)
-
-
-# from PIL import Image
-# import io
-
-# decoded = open('decoded.png', 'wb')
-# decoded.write(base64.b64decode(b64string))
-# decoded.close()
